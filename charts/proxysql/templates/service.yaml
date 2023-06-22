@@ -12,7 +12,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port | default .Values.proxysql.mysql.port }}
-      targetPort: mysql
+      targetPort: {{ .Values.proxysql.mysql.port | default "mysql" }}
       protocol: TCP
       name: mysql
   selector:
