@@ -98,7 +98,7 @@ data:
       {{- $totalServers := (len .Values.proxysql.mysql.servers) -}}
       {{- range $index, $element := .Values.proxysql.mysql.servers }}
       {
-        hostgroup_id={{- if or $element.isWriter (kindIs "invalid" $element.isWriter) }}1{{- else }}2{{- end }}
+        hostgroup_id={{ required "mysql server's hostgroupId is required!" $element.hostgroupId }}
         hostname="{{ required "mysql server's hostname is required!" $element.hostname }}"
         port={{ $element.port | default 3306 }}
         weight={{ $element.weight | default 1000 }}
@@ -147,7 +147,7 @@ data:
         username="{{ required "mysql username is required!" $element.username }}"
         password="{{ required "mysql passowrd is required!" $element.password }}"
         use_ssl=0
-        default_hostgroup={{ (add1 (int $element.readOnly | default 0)) }}
+        default_hostgroup={{ required "mysql hostgroupId is required" $element.hostgroupId }}
         transaction_persistent=1
         active=1
         max_connections={{ $element.maxConnections | default 10000 }}
