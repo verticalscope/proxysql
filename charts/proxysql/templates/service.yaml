@@ -11,9 +11,12 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port | default .Values.proxysql.mysql.port }}
-      targetPort: {{ .Values.proxysql.mysql.port | default "mysql" }}
+    {{- $mysqlPort := .Values.proxysql.mysql.port | default "mysql" }}
+    {{ range .Values.service.ports -}}
+    - port: {{ . }}
+      targetPort: {{ $mysqlPort }}
       protocol: TCP
-      name: mysql
+      name: "mysql-{{ . }}"
+    {{ end }}
   selector:
     {{- include "proxysql.selectorLabels" . | nindent 4 }}
