@@ -15,6 +15,9 @@ data:
     PROXYSQL_ADMIN_USER={{ .Values.proxysql.admin.user }}
     PROXYSQL_ADMIN_PASSWORD={{ .Values.proxysql.admin.password }}
 
+    echo "Waiting for proxysql to be ready ..."
+    sleep 10
+
     while true; do
 
       wget -q -O /tmp/proxysql/import.sql "http://$CONSUL_SERVICE:8500/v1/kv/proxysql/users?token=$CONSUL_TOKEN&raw"
