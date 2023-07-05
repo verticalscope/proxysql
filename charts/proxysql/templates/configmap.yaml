@@ -4,7 +4,7 @@ metadata:
   name: {{ include "proxysql.fullname" . }}-user-sync-script
 data:
   sync-proxysql-users.sh: |
-    #! /bin/bash
+    #! /bin/bash -e
 
     if [ -z "$CONSUL_TOKEN" ]; then
       echo "please set env variable CONSUL_TOKEN"
