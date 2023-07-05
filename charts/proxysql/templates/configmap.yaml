@@ -24,6 +24,7 @@ data:
     # readiness probe for main container looks for this file
     touch /tmp/proxysql/ready.txt
 
+---
 {{- if not .Values.proxysql.configmap }}
 apiVersion: v1
 kind: ConfigMap
