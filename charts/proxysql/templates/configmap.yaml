@@ -4,7 +4,7 @@ metadata:
   name: {{ include "proxysql.fullname" . }}-user-sync-script
 data:
   sync-proxysql-users.sh: |
-    #! /bin/bash -e
+    #! /bin/bash
 
     if [ -z "$CONSUL_TOKEN" ]; then
       echo "please set env variable CONSUL_TOKEN"
@@ -15,14 +15,20 @@ data:
     PROXYSQL_ADMIN_USER={{ .Values.proxysql.admin.user }}
     PROXYSQL_ADMIN_PASSWORD={{ .Values.proxysql.admin.password }}
 
-    wget -q -O /tmp/proxysql/import.sql "http://$CONSUL_SERVICE:8500/v1/kv/proxysql/users?token=$CONSUL_TOKEN&raw"
+    while true; do
 
-    mysql -h 127.0.0.1 -P 6032 -u $PROXYSQL_ADMIN_USER -p"$PROXYSQL_ADMIN_PASSWORD" < /tmp/proxysql/import.sql
-    echo "select count(distinct(username)) from runtime_mysql_users" | mysql -h 127.0.0.1 -P 6032 -u $PROXYSQL_ADMIN_USER -p"$PROXYSQL_ADMIN_PASSWORD"
-    echo "$(date): users imported successfully"
+      wget -q -O /tmp/proxysql/import.sql "http://$CONSUL_SERVICE:8500/v1/kv/proxysql/users?token=$CONSUL_TOKEN&raw"
 
-    # readiness probe for main container looks for this file
-    touch /tmp/proxysql/ready.txt
+      mysql -h 127.0.0.1 -P 6032 -u $PROXYSQL_ADMIN_USER -p"$PROXYSQL_ADMIN_PASSWORD" < /tmp/proxysql/import.sql
+      echo "select count(distinct(username)) from runtime_mysql_users" | mysql -h 127.0.0.1 -P 6032 -u $PROXYSQL_ADMIN_USER -p"$PROXYSQL_ADMIN_PASSWORD"
+      echo "$(date): users imported successfully"
+
+      # readiness probe for main container looks for this file
+      touch /tmp/proxysql/ready.txt
+
+      sleep 1800
+
+    done
 
 ---
 {{- if not .Values.proxysql.configmap }}
