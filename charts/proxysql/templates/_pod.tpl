@@ -67,9 +67,7 @@ spec:
             secretKeyRef:
               name: consul-token-readonly
               key: token
-      # TODO: replace with script
-      command: [ "/bin/bash", "-c", "--" ]
-      args: [ "while true; do sleep 30; done;" ]
+      command: [ "/bin/bash", "/sync-proxysql-users.sh" ]
       volumeMounts:
         - name: proxysql-tmp
           mountPath: /tmp/proxysql
