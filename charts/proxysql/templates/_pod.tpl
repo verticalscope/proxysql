@@ -61,12 +61,21 @@ spec:
         {{- toYaml .Values.securityContext | nindent 8 }}
       image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
       imagePullPolicy: {{ .Values.image.pullPolicy }}
+      env:
+        - name: CONSUL_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: consul-token-readonly
+              key: token
       # TODO: replace with script
       command: [ "/bin/bash", "-c", "--" ]
       args: [ "while true; do sleep 30; done;" ]
       volumeMounts:
         - name: proxysql-tmp
           mountPath: /tmp/proxysql
+        - name: proxysql-user-sync-script
+          mountPath: /sync-proxysql-users.sh
+          subPath: sync-proxysql-users.sh
       resources:
         {{- toYaml .Values.resources | nindent 8 }}
   volumes:
@@ -76,6 +85,9 @@ spec:
     - name: proxysql-tmp
       emptyDir:
         sizeLimit: 50Mi
+    - name: proxysql-user-sync-script
+      configMap:
+        name: proxysql-user-sync-script
   {{- with .Values.nodeSelector }}
   nodeSelector:
     {{- toYaml . | nindent 4 }}
