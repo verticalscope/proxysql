@@ -48,16 +48,34 @@ spec:
           mountPath: /etc/proxysql.cnf
           subPath: proxysql.cnf
           readOnly: true
+        - name: proxysql-tmp
+          mountPath: /tmp/proxysql
       {{- if and .Values.proxysql.cluster.enabled .Values.proxysql.cluster.claim.enabled }}
         - name: {{ include "proxysql.fullname" . }}-pv
           mountPath: /var/lib/proxysql
       {{- end }}
       resources:
         {{- toYaml .Values.resources | nindent 8 }}
+    - name: {{ .Chart.Name }}-user-sync-sidecar
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8 }}
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+      imagePullPolicy: {{ .Values.image.pullPolicy }}
+      # TODO: replace with script
+      command: [ "/bin/bash", "-c", "--" ]
+      args: [ "while true; do sleep 30; done;" ]
+      volumeMounts:
+        - name: proxysql-tmp
+          mountPath: /tmp/proxysql
+      resources:
+        {{- toYaml .Values.resources | nindent 8 }}
   volumes:
     - name: proxysql-config
       configMap:
         name: {{ .Values.proxysql.configmap | default (include "proxysql.fullname" .) }}
+    - name: proxysql-tmp
+      emptyDir:
+        sizeLimit: 50Mi
   {{- with .Values.nodeSelector }}
   nodeSelector:
     {{- toYaml . | nindent 4 }}
