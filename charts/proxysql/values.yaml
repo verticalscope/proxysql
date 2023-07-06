@@ -23,7 +23,7 @@ cronjobs:
     enabled: true
     schedule: "0 * * * *"
     image: "gcr.io/california-staging/platform-tools/python-california"
-    tag: "0.2"
+    tag: "0.3"
 
 serviceAccount:
   # Specifies whether a service account should be created
