@@ -16,7 +16,14 @@ fullnameOverride: ""
 
 consul:
   host: consul-consul-client.consul.svc.cluster.local
-  tokenSecret: consul-token-readonly
+  tokenSecret: consul-token-write
+
+cronjobs:
+  consulUpdater:
+    enabled: true
+    schedule: "0 * * * *"
+    image: "gcr.io/california-staging/platform-tools/python-california"
+    tag: "0.2"
 
 serviceAccount:
   # Specifies whether a service account should be created

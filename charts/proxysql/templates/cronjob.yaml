@@ -1,0 +1,33 @@
+{{- if .Values.cronjobs.consulUpdater.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "proxysql.fullname" . }}-consul-updater
+spec:
+  schedule: "{{ .Values.cronjobs.consulUpdater.schedule }}"
+  suspend: false
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: consul-updater
+              image: gcr.io/california-staging/platform-tools/python-california:0.2
+              imagePullPolicy: IfNotPresent
+              command: ["/bin/bash","-c"]
+              env:
+                - name: CONSUL_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: consul-token-write
+                      key: token
+                - name: CONSUL_SERVICE
+                  value: {{ .Values.consul.host }}
+              args:
+                - python3 dump_consul_data.py && python3 generate_proxysql_credentials.py && python3 write_proxysql_credentials.py
+          restartPolicy: OnFailure
+---
+{{- end }}
