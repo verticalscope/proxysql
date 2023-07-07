@@ -65,7 +65,7 @@ spec:
         - name: CONSUL_TOKEN
           valueFrom:
             secretKeyRef:
-              name: consul-token-readonly
+              name: {{ .Values.consul.tokenSecret }}
               key: token
       command: [ "/bin/bash", "/sync-proxysql-users.sh" ]
       volumeMounts:
