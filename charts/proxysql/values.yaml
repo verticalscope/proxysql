@@ -108,7 +108,8 @@ proxysql:
 service:
   type: ClusterIP
   # default as proxysql.mysql.port
-  # port: 3306
+  ports:
+    - 3306
   annotations: {}
 
 resources: {}
