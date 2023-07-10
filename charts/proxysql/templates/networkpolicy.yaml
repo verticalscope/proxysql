@@ -26,7 +26,10 @@ spec:
     - Ingress
   ingress:
     - from:
-        - podSelector:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cali-public
+          podSelector:
             matchLabels:
               app: xenforo
       ports:
