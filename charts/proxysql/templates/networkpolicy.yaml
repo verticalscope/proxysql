@@ -34,5 +34,5 @@ spec:
               app: xenforo
       ports:
         - protocol: TCP
-          port: 4318
+          port: 3306
 ---
