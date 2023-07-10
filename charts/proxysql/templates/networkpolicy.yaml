@@ -20,7 +20,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-xenforo
+  name: allow-cali-public-xenforo
 spec:
   policyTypes:
     - Ingress
@@ -29,6 +29,25 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: cali-public
+          podSelector:
+            matchLabels:
+              app: xenforo
+      ports:
+        - protocol: TCP
+          port: 3306
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cali-api-internal-xenforo
+spec:
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cali-api-internal
           podSelector:
             matchLabels:
               app: xenforo
